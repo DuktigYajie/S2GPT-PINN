@@ -196,3 +196,37 @@ def gram_schmidt2_double(i, xt_resid, lmbda, eps, trained_c, residual_full, out_
     
     X_train_all[(2*i)+1] = xt_resid[x_rmax_idx].detach() 
     X_all_idx[(2*i)+1]   = x_rmax_idx
+
+def inputs(PINN, xt, out, out_xx, out_t, out_IC, out_BC_ub, out_BC_lb, IC_xt, 
+           BC_xt_ub, BC_xt_lb, i, out_test, xt_test, f_hat, xt_size, out_BC_diff,
+           out_BC_ub_x, out_BC_lb_x, out_BC_diff_x):
+    
+    end = i+1
+    P = PINN(xt)
+    out[:,i][:,None] = P.detach()
+    P_t, P_xx = derivatives(xt, P)
+    out_t[:,i][:,None]  = P_t
+    out_xx[:,i][:,None] = P_xx
+    
+    out_IC[:,i][:,None] = PINN(IC_xt).detach()
+    
+    out_ub = PINN(BC_xt_ub)
+    out_lb = PINN(BC_xt_lb)
+    
+    out_BC_ub[:,i][:,None]   = out_ub.detach()
+    out_BC_lb[:,i][:,None]   = out_lb.detach()
+    out_BC_diff[:,i][:,None] = torch.sub(out_ub.detach(), out_lb.detach())
+    
+    out_ub_x = boundary_derivative(BC_xt_ub, out_ub)
+    out_lb_x = boundary_derivative(BC_xt_lb, out_lb)
+    
+    out_BC_ub_x[:,i][:,None]   = out_ub_x
+    out_BC_lb_x[:,i][:,None]   = out_lb_x
+    out_BC_diff_x[:,i][:,None] = torch.sub(out_ub_x, out_lb_x)
+
+    out_test[:,i][:,None] = PINN(xt_test).detach()
+    
+    return out[:,0:end], out_xx[:,0:end], out_t[:,0:end], out_IC[:,0:end],\
+           out_BC_ub[:,0:end], out_BC_lb[:,0:end], out_BC_diff[:,0:end],\
+           f_hat, xt_size, out_BC_ub_x[:,0:end], out_BC_lb_x[:,0:end], \
+           out_BC_diff_x[:,0:end]
