@@ -4,3 +4,6 @@ We propose S<sup>2</sup>GPT-PINN, a sparse and small model for solving parametri
 
 # S<sup>2</sup>GPT-PINN Architecture:
 ![image](https://github.com/DuktigYajie/S2GPT-PINN/blob/main/S2GPT-PINN-Schematic.png)
+
+# Comments：
+If you have any questions or find that some functions or files are missing, feel free to contact me at jiyajie595@sjtu.edu.cn.
